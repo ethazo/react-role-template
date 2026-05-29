@@ -1,0 +1,28 @@
+/**
+ * 品牌皮肤：medical（医疗）—— 临床蓝青绿。
+ *
+ * 这是「换项目唯一要动的一层」：只定义品牌色阶 --brand-*（和点缀色 --brand-accent）。
+ * 上层 semantic.css 只引用 --brand-*，所以换皮肤 = 换这一组值，
+ * 50+ 语义令牌和全部 shadcn 组件自动级联，无需改任何组件代码。
+ *
+ * 同时挂在 :root 上 → 作为「开箱默认皮肤」，即使 JS 未执行也成立。
+ * 色相 225（蓝偏青）：传达信任、洁净、冷静、专业——全球医疗界通用色性。
+ */
+
+:root,
+[data-brand='medical'] {
+  --brand-50: oklch(0.97 0.02 225);
+  --brand-100: oklch(0.93 0.045 225);
+  --brand-200: oklch(0.88 0.07 225);
+  --brand-300: oklch(0.8 0.1 225);
+  --brand-400: oklch(0.7 0.13 225);
+  --brand-500: oklch(0.62 0.15 225);
+  --brand-600: oklch(0.55 0.155 225);
+  --brand-700: oklch(0.47 0.14 225);
+  --brand-800: oklch(0.4 0.11 225);
+  --brand-900: oklch(0.33 0.08 225);
+
+  /* 点缀色：青绿 teal（色相 190），用于次要强调/数据高亮 */
+  --brand-accent: oklch(0.7 0.12 190);
+  --brand-accent-foreground: oklch(0.99 0 0);
+}
