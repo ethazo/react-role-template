@@ -3,10 +3,10 @@
 @import 'shadcn/tailwind.css';
 @import '@fontsource-variable/geist';
 
-/* 分层主题令牌：① 原始色阶 → 品牌皮肤 → ② 语义令牌（详见各文件头注释） */
+/* 分层主题令牌：① 图表色板 → 品牌主色 → ② 语义令牌（HeroUI 移植，详见各文件头注释） */
 @import './shared/theme/tokens/primitives.css';
-@import './shared/theme/tokens/brands/medical.css';
-@import './shared/theme/tokens/brands/education.css';
+@import './shared/theme/tokens/brands/heroui.css';
+@import './shared/theme/tokens/brands/violet.css';
 @import './shared/theme/tokens/semantic.css';
 
 @custom-variant dark (&:is(.dark *));

@@ -5,14 +5,15 @@
  * [data-brand='xxx'] 覆盖 --brand-* 色阶，semantic 令牌与全部组件随之级联。
  * 与 next-themes 的明暗（.dark 类）正交，互不干扰。
  */
-import { DEFAULT_BRAND, type BrandName } from '@/config/theme'
+import { ALL_BRANDS, DEFAULT_BRAND, type BrandName } from '@/config/theme'
 
 const STORAGE_KEY = 'app.brand'
 
 function readStoredBrand(): BrandName | null {
   try {
-    const v = localStorage.getItem(STORAGE_KEY)
-    return v === 'medical' || v === 'education' ? v : null
+    const v = localStorage.getItem(STORAGE_KEY) ?? ''
+    // 动态对照 ALL_BRANDS，新增/改名皮肤无需再改这里
+    return (ALL_BRANDS as readonly string[]).includes(v) ? (v as BrandName) : null
   } catch {
     return null
   }

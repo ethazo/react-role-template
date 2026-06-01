@@ -53,7 +53,7 @@ src/
     roles.ts      ★ 角色单一数据源（Role 类型的根来源）
     theme.ts      ★ 主题单一数据源（默认皮肤 / 字体 / 是否允许切换）
   shared/theme/
-    tokens/       分层 CSS 令牌：primitives → brands/* → semantic
+    tokens/       分层 CSS 令牌：primitives(图表色板) → brands/*(品牌主色) → semantic(完整主题，移植自 HeroUI)
     brand.ts      品牌皮肤运行时应用（data-brand）
     fonts.ts      字体预设运行时应用（按需加载本地 woff2）
   modules/      按角色分区，各自自包含
@@ -83,30 +83,31 @@ src/
 
 ## 主题系统
 
-面向**中国医疗 / 教育**场景设计的可复用主题底座：临床蓝青绿 / 智慧靛蓝、完整状态色、紧凑密度、中文字体，**换项目不改组件代码**。访问 `/showcase` 可实时预览并切换皮肤 / 字体 / 明暗。
+面向**教育 / 教学**场景（学生·教师内部系统、比赛/演示系统）的可复用主题底座：明亮专业的科技蓝、活力橙点缀、完整状态色、中文字体，**换项目不改组件代码**。配色移植自 [HeroUI](https://heroui.com) 默认主题。访问 `/showcase` 可实时预览并切换皮肤 / 字体 / 明暗。
 
-### 分层令牌（换皮肤不大改的关键）
-
-颜色拆成三层，新项目只动最薄的「品牌层」：
+### 分层令牌（职责清晰，换主色只动品牌层）
 
 ```
-① 原始色阶 primitives.css   每个色相 50→950 一套（中性灰 + 状态色 + 图表色），几乎永不改
+① 图表色板 primitives.css   仅 5 个图表分类色 --viz-*，与主题解耦，几乎永不改
+② 品牌主色 brands/*.css     只定义 --brand-* 色阶 + 暖色点缀 --brand-accent；换主色色相 = 换这一组值
         ↓ 被引用
-② 语义令牌 semantic.css     --primary/--success/--warning/--info... 只是"指向某一阶"；明暗只是改指向
-        ↓ 被引用
-③ 品牌皮肤 brands/*.css     只定义 --brand-* 色阶。换皮肤 = 换这一组值
+③ 语义令牌 semantic.css     完整主题（移植自 HeroUI）：--primary 引用品牌层，
+                            中性面 / 状态色 / 明暗两套都在此；变量名沿用 shadcn 约定
 ```
 
 - **变量名完全沿用 shadcn 约定**（`--primary`/`--background`...），所以 `components/ui/*` 一行都不用改，组件库可随时替换。
-- 新增状态语义色：`bg-success` / `text-warning` / `border-info` / `bg-destructive` 直接可用（医疗「正常 / 异常 / 危急值」）。
-- 全程 **oklch** 色彩空间，明暗模式对比度一致，按 WCAG AA 校验。
+- 状态语义色：`bg-success` / `text-warning` / `border-info` / `bg-destructive` 直接可用；success / warning 用**深色前景**（亮色底上才清晰）。
+- 暖色点缀：`bg-brand-accent` / `text-brand-accent`（徽章 / CTA / 图表高亮）。
+- 全程 **oklch** 色彩空间，明暗模式对比度一致。
 
 ### 切换 / 新增皮肤
 
-- 运行时切换：界面右上角 `BrandToggle`，或代码 `setBrand('education')`（写 `<html data-brand>` + 持久化）。
+内置两套：`heroui`（科技蓝，默认）/ `violet`（创想紫），暖橙点缀共用。
+
+- 运行时切换：界面右上角 `BrandToggle`，或代码 `setBrand('violet')`（写 `<html data-brand>` + 持久化）。
 - 默认皮肤：改 `src/config/theme.ts` 的 `DEFAULT_BRAND`。
-- **新增一套皮肤**（如 `gov` 政务红）：① `config/theme.ts` 的 `BRANDS` 加一行 → ② `tokens/brands/gov.css` 定义 `[data-brand='gov']` 的 `--brand-*` 色阶 → ③ `index.css` 加一行 `@import`。完成，全站自动支持。
-- 推荐用 [tweakcn.com](https://tweakcn.com) 可视化调色并导出，或 [oklch.com](https://oklch.com) 取色。
+- **新增一套皮肤**（如 `green` 生机绿）：① `config/theme.ts` 的 `BRANDS` 加一行 → ② `tokens/brands/green.css` 定义 `[data-brand='green']` 的 `--brand-*` 色阶（含 `--brand-accent`） → ③ `index.css` 加一行 `@import`。完成，全站自动支持。
+- 推荐用 [tweakcn.com](https://tweakcn.com) 可视化调色并导出，或 [oklch.com](https://oklch.com) 取色；主色注意避开「正常 = 绿」语义。
 
 ### 字体（内网 / 信创友好）
 

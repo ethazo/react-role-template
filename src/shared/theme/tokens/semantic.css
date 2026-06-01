@@ -1,100 +1,101 @@
 /**
- * ② 语义令牌 (Semantic tokens) —— 表达「用途」，不写死颜色。
+ * ② 语义令牌 (Semantic tokens) —— 表达「用途」。
  *
- * 每个变量都指向 ① primitives 或 brand 的某一阶；明暗模式只是「改指向哪一阶」。
- * 关键：变量名完全沿用 shadcn 既有约定（--primary/--background/...），
- * 因此 components/ui/* 一行都不用改；这里只是改变它们「指向什么」，
- * 并新增 success/warning/info 等状态语义。
+ * 本主题移植自 HeroUI 默认主题（导出值，明暗两套）。映射约定：
+ * - HeroUI --accent（品牌蓝）→ shadcn --primary（注意 shadcn 的 --accent 另指浅底悬浮色）；
+ * - HeroUI --surface/--overlay/--default/--surface-secondary/-tertiary → card/popover/secondary/muted/accent；
+ * - HeroUI 在 success/warning 上用深色前景，这里照搬（亮绿/亮黄上深字才清晰）；
+ * - HeroUI 无独立 info，用品牌蓝兜底。
  *
- * 换皮肤改 brands/*.css，换明暗在下面 .dark 调整，二者都不碰组件。
+ * 变量名完全沿用 shadcn 约定，components/ui/* 一行不用改。
+ * 换主色（蓝→其它色相）改 brands/*.css；换明暗在下面 .dark 调整；二者都不碰组件。
  */
 
 :root {
-  --radius: 0.5rem; /* 8px：PC 为主、兼顾平板触控的折中圆角（原 shadcn 为 10px） */
+  --radius: 0.5rem;
 
-  /* 基础面 */
-  --background: oklch(0.995 0.001 247);
-  --foreground: var(--gray-950);
-  --card: oklch(1 0 0);
-  --card-foreground: var(--gray-950);
-  --popover: oklch(1 0 0);
-  --popover-foreground: var(--gray-950);
+  /* 基础面 / surface 层级 */
+  --background: oklch(0.9702 0.0015 253.83);
+  --foreground: oklch(0.2103 0.0015 253.83);
+  --card: oklch(1 0.0008 253.83);
+  --card-foreground: oklch(0.2103 0.0015 253.83);
+  --popover: oklch(1 0.0004 253.83);
+  --popover-foreground: oklch(0.2103 0.0015 253.83);
 
-  /* 品牌主色 */
-  --primary: var(--brand-600);
-  --primary-foreground: oklch(0.99 0 0);
+  /* 品牌主色（引用品牌层，换色只改 brands/*.css） */
+  --primary: var(--brand-500);
+  --primary-foreground: oklch(0.9911 0 0);
 
-  /* 次要 / 弱化 / 强调（accent 用淡品牌色，整体染上品牌气质） */
-  --secondary: var(--gray-100);
-  --secondary-foreground: var(--gray-800);
-  --muted: var(--gray-100);
-  --muted-foreground: var(--gray-500);
-  --accent: var(--brand-50);
-  --accent-foreground: var(--brand-700);
+  /* 次要 / 弱化 / 强调（对接 HeroUI default / surface-secondary / surface-tertiary） */
+  --secondary: oklch(0.94 0.0015 253.83);
+  --secondary-foreground: oklch(0.2103 0.0059 253.83);
+  --muted: oklch(0.9524 0.0012 253.83);
+  --muted-foreground: oklch(0.5517 0.003 253.83);
+  --accent: oklch(0.9373 0.0012 253.83);
+  --accent-foreground: oklch(0.2103 0.0015 253.83);
 
-  /* 状态色（语义固定，跨皮肤稳定） */
-  --destructive: var(--red-600);
-  --destructive-foreground: oklch(0.99 0 0);
-  --success: var(--green-600);
-  --success-foreground: oklch(0.99 0 0);
-  --warning: var(--amber-500);
-  --warning-foreground: var(--gray-950);
-  --info: var(--sky-600);
-  --info-foreground: oklch(0.99 0 0);
+  /* 状态色（HeroUI danger/success/warning；success·warning 用深色前景） */
+  --destructive: oklch(0.6532 0.2335 25.74);
+  --destructive-foreground: oklch(0.9911 0 0);
+  --success: oklch(0.7329 0.1941 150.81);
+  --success-foreground: oklch(0.2103 0.0059 150.81);
+  --warning: oklch(0.7819 0.159 72.33);
+  --warning-foreground: oklch(0.2103 0.0059 72.33);
+  --info: var(--brand-500);
+  --info-foreground: oklch(0.9911 0 0);
 
-  /* 描边 / 输入框 / 焦点环 */
-  --border: var(--gray-200);
-  --input: var(--gray-200);
+  /* 描边 / 输入框 / 焦点环（HeroUI border / focus=accent） */
+  --border: oklch(0.9 0.0015 253.83);
+  --input: oklch(0.9 0.0015 253.83);
   --ring: var(--brand-500);
 
-  /* 图表 */
+  /* 图表（保留独立分类色板，见 primitives.css） */
   --chart-1: var(--viz-1);
   --chart-2: var(--viz-2);
   --chart-3: var(--viz-3);
   --chart-4: var(--viz-4);
   --chart-5: var(--viz-5);
 
-  /* 侧边栏：浅品牌染色，区别于纯白主区，强化「系统」层级感 */
-  --sidebar: oklch(0.985 0.004 247);
-  --sidebar-foreground: var(--gray-700);
-  --sidebar-primary: var(--brand-600);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: var(--brand-50);
-  --sidebar-accent-foreground: var(--brand-700);
-  --sidebar-border: var(--gray-200);
+  /* 侧边栏：用 surface-secondary 作面板底，区别于主内容区 */
+  --sidebar: oklch(0.9524 0.0012 253.83);
+  --sidebar-foreground: oklch(0.2103 0.0015 253.83);
+  --sidebar-primary: var(--brand-500);
+  --sidebar-primary-foreground: oklch(0.9911 0 0);
+  --sidebar-accent: oklch(0.9373 0.0012 253.83);
+  --sidebar-accent-foreground: oklch(0.2103 0.0015 253.83);
+  --sidebar-border: oklch(0.9 0.0015 253.83);
   --sidebar-ring: var(--brand-500);
 }
 
 .dark {
-  /* 暗色：背景压到接近黑的冷灰，品牌色提亮一阶以保证可读性与对比度 */
-  --background: var(--gray-950);
-  --foreground: var(--gray-50);
-  --card: var(--gray-900);
-  --card-foreground: var(--gray-50);
-  --popover: var(--gray-900);
-  --popover-foreground: var(--gray-50);
+  --background: oklch(0.12 0.0015 253.83);
+  --foreground: oklch(0.9911 0.0015 253.83);
+  --card: oklch(0.2103 0.003 253.83);
+  --card-foreground: oklch(0.9911 0.0015 253.83);
+  --popover: oklch(0.2103 0.003 253.83);
+  --popover-foreground: oklch(0.9911 0.0015 253.83);
 
   --primary: var(--brand-400);
-  --primary-foreground: var(--gray-950);
+  --primary-foreground: oklch(0.9911 0 0);
 
-  --secondary: var(--gray-800);
-  --secondary-foreground: var(--gray-50);
-  --muted: var(--gray-800);
-  --muted-foreground: var(--gray-400);
-  --accent: var(--gray-800);
-  --accent-foreground: var(--brand-300);
+  --secondary: oklch(0.274 0.0015 253.83);
+  --secondary-foreground: oklch(0.9911 0 0);
+  --muted: oklch(0.257 0.0023 253.83);
+  --muted-foreground: oklch(0.705 0.003 253.83);
+  --accent: oklch(0.2721 0.0023 253.83);
+  --accent-foreground: oklch(0.9911 0.0015 253.83);
 
-  --destructive: var(--red-500);
-  --destructive-foreground: oklch(0.99 0 0);
-  --success: var(--green-500);
-  --success-foreground: var(--gray-950);
-  --warning: var(--amber-500);
-  --warning-foreground: var(--gray-950);
-  --info: var(--sky-500);
-  --info-foreground: var(--gray-950);
+  --destructive: oklch(0.594 0.1973 24.63);
+  --destructive-foreground: oklch(0.9911 0 0);
+  --success: oklch(0.7329 0.1941 150.81);
+  --success-foreground: oklch(0.2103 0.0059 150.81);
+  --warning: oklch(0.8203 0.1392 76.34);
+  --warning-foreground: oklch(0.2103 0.0059 76.34);
+  --info: var(--brand-400);
+  --info-foreground: oklch(0.9911 0 0);
 
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --border: oklch(0.28 0.0015 253.83);
+  --input: oklch(0.28 0.0015 253.83);
   --ring: var(--brand-500);
 
   --chart-1: var(--viz-1);
@@ -103,12 +104,12 @@
   --chart-4: var(--viz-4);
   --chart-5: var(--viz-5);
 
-  --sidebar: var(--gray-900);
-  --sidebar-foreground: var(--gray-300);
+  --sidebar: oklch(0.2103 0.003 253.83);
+  --sidebar-foreground: oklch(0.9911 0.0015 253.83);
   --sidebar-primary: var(--brand-400);
-  --sidebar-primary-foreground: var(--gray-950);
-  --sidebar-accent: var(--gray-800);
-  --sidebar-accent-foreground: var(--brand-300);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-primary-foreground: oklch(0.9911 0 0);
+  --sidebar-accent: oklch(0.2721 0.0023 253.83);
+  --sidebar-accent-foreground: oklch(0.9911 0.0015 253.83);
+  --sidebar-border: oklch(0.28 0.0015 253.83);
   --sidebar-ring: var(--brand-500);
 }

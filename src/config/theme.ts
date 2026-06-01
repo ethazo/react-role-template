@@ -8,10 +8,13 @@
  * - 运行时应用逻辑见 src/shared/theme/{brand,fonts}.ts
  */
 
-/** 可选品牌皮肤；新增皮肤：加一行 + 在 tokens/brands/ 下加同名 css */
+/**
+ * 可选品牌皮肤；新增皮肤：加一行 + 在 tokens/brands/ 下加同名 css。
+ * 品牌层只决定「主色色相」，整体主题（中性/状态）由 semantic.css 承载。
+ */
 export const BRANDS = {
-  medical: { label: '医疗' },
-  education: { label: '教育' },
+  heroui: { label: '科技蓝' },
+  violet: { label: '创想紫' },
 } as const
 
 export type BrandName = keyof typeof BRANDS
@@ -19,7 +22,7 @@ export type BrandName = keyof typeof BRANDS
 export const ALL_BRANDS = Object.keys(BRANDS) as BrandName[]
 
 /** 开箱默认皮肤（也可被 localStorage 中用户的选择覆盖，见 brand.ts） */
-export const DEFAULT_BRAND: BrandName = 'medical'
+export const DEFAULT_BRAND: BrandName = 'heroui'
 
 /**
  * 字体预设。
