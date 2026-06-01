@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios'
+import axios, { AxiosError, type AxiosRequestConfig } from 'axios'
 import { ApiError, SUCCESS_CODE, type ApiEnvelope } from './types'
 import { handleUnauthorized } from './unauthorized'
 import { env } from '@/config/env'
@@ -10,8 +10,11 @@ import { env } from '@/config/env'
  * - withCredentials：自动携带 Cookie（USESSIONID，本模板的鉴权前提）
  * - 响应拦截：解包统一 envelope、把错误规整成 ApiError
  * - 401：调用已注册的处理器（默认跳登录），并向上抛出
+ *
+ * 注意：apiClient 为内部细节，业务代码一律走下方导出的 `http`，
+ * 以统一请求范式（类型化返回、配置项收口）。
  */
-export const apiClient = axios.create({
+const apiClient = axios.create({
   baseURL: env.VITE_API_BASE_URL,
   withCredentials: true,
   timeout: 15000,
@@ -32,7 +35,8 @@ apiClient.interceptors.response.use(
   },
   (error: AxiosError<ApiEnvelope>) => {
     const status = error.response?.status
-    if (status === 401) {
+    // 探测请求（silent）的 401 属预期内，交还给调用方处理，不触发全局跳登录
+    if (status === 401 && !error.config?.silent) {
       handleUnauthorized()
     }
     const message = error.response?.data?.msg ?? error.message ?? '网络异常，请稍后重试'
@@ -40,8 +44,18 @@ apiClient.interceptors.response.use(
   },
 )
 
-/** 简单类型化的 GET/POST 包装：调用方直接拿到解包后的 data 类型 */
+/**
+ * 请求配置：仅暴露业务常用项（查询参数、请求头、取消信号、silent 探测标记），
+ * 其余 axios 配置刻意不开放，避免调用方绕过统一范式。
+ */
+type RequestConfig = Pick<AxiosRequestConfig, 'params' | 'headers' | 'signal' | 'silent'>
+
+/**
+ * 类型化的请求入口（业务唯一出口）。
+ * 经响应拦截器解包后，调用方直接拿到 envelope.data 的类型 T。
+ */
 export const http = {
-  get: <T>(url: string, params?: unknown) => apiClient.get(url, { params }) as Promise<T>,
-  post: <T>(url: string, body?: unknown) => apiClient.post(url, body) as Promise<T>,
+  get: <T>(url: string, config?: RequestConfig) => apiClient.get(url, config) as Promise<T>,
+  post: <T>(url: string, body?: unknown, config?: RequestConfig) =>
+    apiClient.post(url, body, config) as Promise<T>,
 }

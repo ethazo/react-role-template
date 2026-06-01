@@ -4,17 +4,17 @@
 
 ## 技术栈
 
-| 层 | 选型 |
-|---|---|
-| 构建 | Vite + React 19 + TypeScript |
-| 路由 | TanStack Router（代码式，类型安全守卫） |
-| 服务端状态 | TanStack Query |
-| 本地状态 | Zustand |
-| 请求 | Axios（`withCredentials` + 统一拦截/解包/401 跳登录） |
-| 表单 | react-hook-form + zod |
-| 样式 | Tailwind CSS v4 + shadcn（分层令牌主题，详见「主题系统」） |
-| 后端 | 真实接口（Vite 代理到 `http://duomokuai.ulps.local.lzlzlzlz.xyz`，规避 CORS） |
-| 规范 | ESLint + Prettier + husky + lint-staged + commitlint |
+| 层         | 选型                                                                          |
+| ---------- | ----------------------------------------------------------------------------- |
+| 构建       | Vite + React 19 + TypeScript                                                  |
+| 路由       | TanStack Router（代码式，类型安全守卫）                                       |
+| 服务端状态 | TanStack Query                                                                |
+| 本地状态   | Zustand                                                                       |
+| 请求       | Axios（`withCredentials` + 统一拦截/解包/401 跳登录）                         |
+| 表单       | react-hook-form + zod                                                         |
+| 样式       | Tailwind CSS v4 + shadcn（分层令牌主题，详见「主题系统」）                    |
+| 后端       | 真实接口（Vite 代理到 `http://duomokuai.ulps.local.lzlzlzlz.xyz`，规避 CORS） |
+| 规范       | ESLint + Prettier + husky + lint-staged + commitlint                          |
 
 ## 快速开始
 
@@ -59,7 +59,7 @@ src/
   modules/      按角色分区，各自自包含
     student/      自定义顶部导航布局（演示非侧边菜单形态）
     teacher/      共享 SidebarLayout
-    admin/        共享 SidebarLayout + 列表页（分页/筛选同步 URL）
+    admin/        共享 SidebarLayout（页面为占位，业务内容按项目填充）
   layouts/      可选布局：SidebarLayout / BlankLayout
   pages/        公共页：login / 403 / 404 / error / showcase（设计系统展示）
 ```

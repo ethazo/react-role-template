@@ -8,6 +8,15 @@ export interface ApiEnvelope<T = unknown> {
   data: T
 }
 
+// 给 axios 请求配置扩一个 silent 标记。
+// 登录态「探测请求」（如刷新后试探 /self）的 401 是预期内结果——
+// 标记 silent 后，拦截器只把错误返回给调用方，不触发全局「跳登录」副作用。
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    silent?: boolean
+  }
+}
+
 /** 业务成功码 */
 export const SUCCESS_CODE = '00000'
 

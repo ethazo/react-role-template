@@ -1,4 +1,4 @@
-import { apiClient } from '@/shared/api/client'
+import { http } from '@/shared/api/client'
 import { ApiError } from '@/shared/api/types'
 import type { CurrentUser } from '@/shared/types'
 import { ALL_ROLES, type Role } from '@/config/roles'
@@ -57,9 +57,12 @@ interface SelfProfile {
   status?: number
 }
 
-/** 拉取某角色的当前用户档案：GET /ulps/{role}/self */
-function fetchSelf(role: Role): Promise<SelfProfile> {
-  return apiClient.get(`/${role}/self`) as Promise<SelfProfile>
+/**
+ * 拉取某角色的当前用户档案：GET /ulps/{role}/self
+ * silent=true 时，401 不触发全局跳登录（用于刷新后的登录态探测，详见 fetchMe）。
+ */
+function fetchSelf(role: Role, opts?: { silent?: boolean }): Promise<SelfProfile> {
+  return http.get<SelfProfile>(`/${role}/self`, { silent: opts?.silent })
 }
 
 function toCurrentUser(profile: SelfProfile, role: Role): CurrentUser {
@@ -84,9 +87,9 @@ export async function login(payload: LoginPayload): Promise<CurrentUser> {
     username: payload.username,
     password: payload.password,
   })
-  const rawRole = (await apiClient.post('/login', body, {
+  const rawRole = await http.post<string>('/login', body, {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  })) as string
+  })
 
   const role = normalizeRole(rawRole)
   if (!role) {
@@ -100,7 +103,7 @@ export async function login(payload: LoginPayload): Promise<CurrentUser> {
 /** 退出登录：GET /ulps/logout，后端清除 cookie */
 export async function logout(): Promise<void> {
   clearRoleHint()
-  await apiClient.get('/logout')
+  await http.get<void>('/logout')
 }
 
 /**
@@ -116,7 +119,8 @@ export async function fetchMe(): Promise<CurrentUser> {
     throw new ApiError('未登录', { status: 401 })
   }
   try {
-    const profile = await fetchSelf(role)
+    // 探测请求：401 仅表示「未登录」，不应触发跳登录（如在登录页探测时）
+    const profile = await fetchSelf(role, { silent: true })
     return toCurrentUser(profile, role)
   } catch (error) {
     const status = error instanceof ApiError ? error.status : undefined

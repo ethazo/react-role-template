@@ -2,6 +2,7 @@ import { createRoute, createRouter, redirect } from '@tanstack/react-router'
 import { rootRoute } from './rootRoute'
 import { queryClient } from './queryClient'
 import { ErrorPage } from '@/pages/error/ErrorPage'
+import { Spinner } from '@/shared/components/Spinner'
 import { loginRoute } from '@/pages/login/loginRoute'
 import { showcaseRoute } from '@/pages/showcase/showcaseRoute'
 import { forbiddenRoute } from '@/pages/error/errorRoutes'
@@ -37,6 +38,8 @@ export const router = createRouter({
   routeTree,
   context: { queryClient },
   defaultErrorComponent: ErrorPage,
+  // 守卫 beforeLoad 为 async（首次需探测登录态），加载超过阈值时显示 Spinner，避免白屏
+  defaultPendingComponent: () => <Spinner />,
   defaultPreload: 'intent',
 })
 

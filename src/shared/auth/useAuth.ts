@@ -25,6 +25,8 @@ export function useAuth() {
     onSuccess: (loggedInUser) => {
       queryClient.setQueryData(meQueryOptions.queryKey, loggedInUser)
     },
+    // 登录错误在表单内联展示（loginError），不弹全局 toast
+    meta: { skipGlobalError: true },
   })
 
   const logoutMutation = useMutation({
@@ -33,6 +35,8 @@ export function useAuth() {
       queryClient.removeQueries({ queryKey: authKeys.me })
       void navigate({ to: '/login' })
     },
+    // 无论成败都已跳回登录页，失败弹 toast 只是噪音
+    meta: { skipGlobalError: true },
   })
 
   return {

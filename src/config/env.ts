@@ -10,6 +10,9 @@ import { z } from 'zod'
  */
 const envSchema = z.object({
   VITE_API_BASE_URL: z.string().min(1, 'VITE_API_BASE_URL 不能为空'),
+  // 站点标题：注入 index.html 的 <title>，也可在运行时复用（如登录页/侧边栏品牌名）。
+  // 缺省时回落，保证不因未配置而中断启动。
+  VITE_APP_TITLE: z.string().min(1).default('react-role-template'),
 })
 
 const parsed = envSchema.safeParse(import.meta.env)

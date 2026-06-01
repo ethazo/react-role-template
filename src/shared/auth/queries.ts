@@ -17,4 +17,6 @@ export const meQueryOptions = queryOptions({
   // 401 等鉴权错误不重试，避免无谓请求
   retry: false,
   staleTime: 5 * 60 * 1000,
+  // 登录态探测：失败由「跳登录/渲染登录页」表达，不弹全局错误 toast
+  meta: { skipGlobalError: true },
 })
