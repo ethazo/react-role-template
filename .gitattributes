@@ -1,0 +1,10 @@
+# 统一以 LF 入库并检出，跨平台一致；配合 Prettier 的 endOfLine: lf，消除 Windows 下的 CRLF 抖动
+* text=auto eol=lf
+
+# 二进制资源不做换行处理
+*.woff2 binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
