@@ -12,7 +12,7 @@
  */
 
 :root {
-  --radius: 0.5rem;
+  --radius: 0.625rem;
 
   /* 基础面 / surface 层级 */
   --background: oklch(0.9702 0.0015 253.83);
@@ -25,6 +25,8 @@
   /* 品牌主色（引用品牌层，换色只改 brands/*.css） */
   --primary: var(--brand-500);
   --primary-foreground: oklch(0.9911 0 0);
+  /* 实色 hover：比主色深一阶，替代半透明，质感更稳 */
+  --primary-hover: var(--brand-600);
 
   /* 次要 / 弱化 / 强调（对接 HeroUI default / surface-secondary / surface-tertiary） */
   --secondary: oklch(0.94 0.0015 253.83);
@@ -77,6 +79,8 @@
 
   --primary: var(--brand-400);
   --primary-foreground: oklch(0.9911 0 0);
+  /* 暗色主色更亮，hover 提亮一阶 */
+  --primary-hover: var(--brand-300);
 
   --secondary: oklch(0.274 0.0015 253.83);
   --secondary-foreground: oklch(0.9911 0 0);
