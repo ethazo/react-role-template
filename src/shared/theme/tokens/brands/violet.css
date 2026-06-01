@@ -2,7 +2,7 @@
  * 品牌皮肤：violet —— 创想紫（色相 300），取自 HeroUI secondary 紫的同色系。
  *
  * 与 heroui 蓝同档次：品牌层只决定主色色相，中性 / 状态由 semantic.css 共享。
- * 紫＝创意 / 想象力，适合教学 / 比赛等偏年轻的场景。暖橙点缀与蓝皮肤共用，保持品牌一致。
+ * 紫＝创意 / 想象力，适合教学 / 比赛等偏年轻的场景。青绿辅色与蓝皮肤共用，保持品牌一致。
  */
 
 [data-brand='violet'] {
@@ -17,7 +17,7 @@
   --brand-800: oklch(0.35 0.135 300);
   --brand-900: oklch(0.28 0.1 300);
 
-  /* 暖色点缀：与 heroui 蓝皮肤一致的活力橙 */
-  --brand-accent: oklch(0.705 0.187 47.6);
-  --brand-accent-foreground: oklch(0.205 0.02 48);
+  /* 辅色点缀：与 heroui 皮肤一致的医疗青绿（色相 ~195） */
+  --brand-accent: oklch(0.72 0.12 195);
+  --brand-accent-foreground: oklch(0.21 0.03 195);
 }

@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { rootRoute } from '@/app/rootRoute'
-import { BlankLayout } from '@/layouts/BlankLayout'
 import { useAuth } from '@/shared/auth/useAuth'
 import { meQueryOptions } from '@/shared/auth/queries'
 import { ApiError } from '@/shared/api/types'
@@ -12,10 +11,9 @@ import { getRoleHome } from '@/config/roles'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ModeToggle } from '@/shared/components/ModeToggle'
-import { BrandToggle } from '@/shared/components/BrandToggle'
-import { FontToggle } from '@/shared/components/FontToggle'
+import { LoginBrandPanel } from './LoginBrandPanel'
+import { APP_NAME, APP_LOGO_TEXT } from '@/config/app'
 
 /**
  * 把外部传入的 redirect 收敛为「站内绝对路径」，否则丢弃。
@@ -65,22 +63,32 @@ function LoginPage() {
   })
 
   return (
-    <BlankLayout>
-      <div className="fixed top-4 right-4 flex items-center gap-2">
-        <BrandToggle />
-        <FontToggle />
-        <ModeToggle />
-      </div>
-      <Card className="w-full max-w-sm">
-        <CardHeader className="items-center text-center">
-          {/* 品牌色块 logo 占位：换皮肤自动变色 */}
-          <span className="mb-2 grid size-12 place-items-center rounded-xl bg-primary text-lg font-bold text-primary-foreground">
-            U
-          </span>
-          <CardTitle className="text-xl">统一登录</CardTitle>
-          <p className="text-sm text-muted-foreground">医疗 · 教育一体化平台</p>
-        </CardHeader>
-        <CardContent>
+    <div className="grid min-h-full lg:grid-cols-2">
+      {/* 左：品牌展示区（大屏可见） */}
+      <LoginBrandPanel />
+
+      {/* 右：登录表单 */}
+      <div className="relative flex flex-col items-center justify-center bg-background px-5 py-12 sm:px-8">
+        <div className="absolute top-4 right-4">
+          <ModeToggle />
+        </div>
+
+        <div className="w-full max-w-sm">
+          {/* 移动端精简品牌条（大屏由左侧展示区承担，故隐藏） */}
+          <div className="mb-8 flex items-center gap-2.5 lg:hidden">
+            <span className="grid size-10 place-items-center rounded-2xl bg-gradient-to-br from-primary to-brand-accent text-base font-bold text-primary-foreground">
+              {APP_LOGO_TEXT}
+            </span>
+            <span className="font-heading text-lg font-semibold text-foreground">{APP_NAME}</span>
+          </div>
+
+          <div className="mb-7 space-y-1.5">
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+              欢迎回来
+            </h1>
+            <p className="text-sm text-muted-foreground">登录以继续使用{APP_NAME}</p>
+          </div>
+
           <form onSubmit={onSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="username">用户名</Label>
@@ -91,7 +99,15 @@ function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">密码</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">密码</Label>
+                <button
+                  type="button"
+                  className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  忘记密码？
+                </button>
+              </div>
               <Input
                 id="password"
                 type="password"
@@ -104,18 +120,22 @@ function LoginPage() {
             </div>
 
             {loginError && (
-              <p className="text-sm text-destructive">
+              <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
                 {loginError instanceof ApiError ? loginError.message : '登录失败'}
               </p>
             )}
 
-            <Button type="submit" disabled={isLoggingIn} className="w-full">
+            <Button type="submit" disabled={isLoggingIn} size="lg" className="w-full">
               {isLoggingIn ? '登录中…' : '登录'}
             </Button>
           </form>
-        </CardContent>
-      </Card>
-    </BlankLayout>
+
+          <p className="mt-8 text-center text-xs text-muted-foreground">
+            登录即代表同意平台服务条款与隐私政策
+          </p>
+        </div>
+      </div>
+    </div>
   )
 }
 

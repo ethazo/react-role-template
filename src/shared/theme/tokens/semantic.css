@@ -12,7 +12,8 @@
  */
 
 :root {
-  --radius: 0.625rem;
+  /* 圆角基准：年轻/亲和取向，整套 rounded-* 由 index.css 的 --radius-* 派生而更圆润 */
+  --radius: 0.875rem;
 
   /* 基础面 / surface 层级 */
   --background: oklch(0.9702 0.0015 253.83);

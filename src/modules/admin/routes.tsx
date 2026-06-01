@@ -5,11 +5,12 @@ import { protect, withNav } from '@/shared/auth/guard'
 import { SidebarLayout } from '@/layouts/SidebarLayout'
 import { AdminHome } from './pages/AdminHome'
 import { AdminUsers } from './pages/AdminUsers'
+import { AdminSettings } from './pages/AdminSettings'
 
 const layoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/admin',
-  component: () => <SidebarLayout title="管理后台" />,
+  component: () => <SidebarLayout title="管理控制台" />,
   ...protect(['admin']),
 })
 
@@ -17,7 +18,7 @@ const homeRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/',
   component: AdminHome,
-  ...withNav(['admin'], { title: '概览', icon: '📊', order: 1 }),
+  ...withNav(['admin'], { title: '概览', icon: 'overview', order: 1 }),
 })
 
 // 列表页 search 参数：URL 即状态。coerce 把 URL 字符串转成数字，catch 提供默认值
@@ -32,7 +33,14 @@ const usersRoute = createRoute({
   path: '/users',
   component: AdminUsers,
   validateSearch: usersSearchSchema,
-  ...withNav(['admin'], { title: '用户管理', icon: '👥', order: 2 }),
+  ...withNav(['admin'], { title: '用户管理', icon: 'users', order: 2 }),
 })
 
-export const adminRouteTree = layoutRoute.addChildren([homeRoute, usersRoute])
+const settingsRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/settings',
+  component: AdminSettings,
+  ...withNav(['admin'], { title: '系统设置', icon: 'settings', order: 3 }),
+})
+
+export const adminRouteTree = layoutRoute.addChildren([homeRoute, usersRoute, settingsRoute])

@@ -4,7 +4,6 @@ import { queryClient } from './queryClient'
 import { ErrorPage } from '@/pages/error/ErrorPage'
 import { Spinner } from '@/shared/components/Spinner'
 import { loginRoute } from '@/pages/login/loginRoute'
-import { showcaseRoute } from '@/pages/showcase/showcaseRoute'
 import { forbiddenRoute } from '@/pages/error/errorRoutes'
 import { requireLogin } from '@/shared/auth/guard'
 import { getRoleHome } from '@/config/roles'
@@ -27,7 +26,6 @@ const indexRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
-  showcaseRoute,
   forbiddenRoute,
   studentRouteTree,
   teacherRouteTree,

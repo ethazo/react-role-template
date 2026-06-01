@@ -104,8 +104,7 @@ src/
 
 内置两套：`heroui`（科技蓝，默认）/ `violet`（创想紫），暖橙点缀共用。
 
-- 运行时切换：界面右上角 `BrandToggle`，或代码 `setBrand('violet')`（写 `<html data-brand>` + 持久化）。
-- 默认皮肤：改 `src/config/theme.ts` 的 `DEFAULT_BRAND`。
+- 皮肤由**代码决定**（产品级模板默认不向终端用户暴露皮肤切换控件）：改 `src/config/theme.ts` 的 `DEFAULT_BRAND`，或在代码里调用 `setBrand('violet')`（写 `<html data-brand>` + 持久化）。
 - **新增一套皮肤**（如 `green` 生机绿）：① `config/theme.ts` 的 `BRANDS` 加一行 → ② `tokens/brands/green.css` 定义 `[data-brand='green']` 的 `--brand-*` 色阶（含 `--brand-accent`） → ③ `index.css` 加一行 `@import`。完成，全站自动支持。
 - 推荐用 [tweakcn.com](https://tweakcn.com) 可视化调色并导出，或 [oklch.com](https://oklch.com) 取色；主色注意避开「正常 = 绿」语义。
 
@@ -119,4 +118,5 @@ src/
 - 英文 / 数字始终优先 Geist，中文落到对应中文字体；表格数字默认等宽对齐（`tabular-nums`）。
 - 新增字体：把本地 woff2 装进来，在 `shared/theme/fonts.ts` 的 `FONT_PRESETS` 登记字体栈与加载器即可。
 
-> 关闭运行时切换：把 `config/theme.ts` 的 `ENABLE_THEME_SWITCH` 设为 `false`，锁定为默认皮肤/字体。
+> 皮肤与字体均**由代码决定、不暴露给终端用户**（产品级默认）。唯一面向用户的外观开关是右上角的**明暗切换** `ModeToggle`。
+> `config/app.ts` 收敛应用名/副标题/Logo 文案，新项目改这一处即可。
