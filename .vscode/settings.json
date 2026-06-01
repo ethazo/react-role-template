@@ -1,0 +1,37 @@
+{
+  // 保存即用 Prettier 格式化，并让 ESLint 自动修复
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // ESLint 走 flat config（项目用 eslint.config.js）
+  "eslint.useFlatConfig": true,
+
+  // 统一换行符与最终空行，配合 Prettier 的 endOfLine: lf，避免 Windows 下 CRLF 抖动
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+
+  // 使用工作区内的 TypeScript 版本，避免与编辑器内置版本不一致
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  // 导入路径优先用 @/* 别名而非相对路径
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+
+  // Tailwind v4：识别 cn()/cva() 等函数内的类名，获得补全/悬浮/排序提示
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ],
+  // 内置 CSS 校验不认识 @theme/@apply/@custom-variant 等 v4 指令，关掉以免误报
+  "css.lint.unknownAtRules": "ignore",
+
+  // 检索/监听时忽略产物与锁文件
+  "search.exclude": {
+    "**/dist": true,
+    "**/node_modules": true,
+    "**/pnpm-lock.yaml": true
+  }
+}

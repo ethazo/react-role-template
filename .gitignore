@@ -18,8 +18,10 @@ dist-ssr
 !.env.example
 
 # Editor directories and files
+# 默认忽略 .vscode，但放行随项目共享的工作区配置（团队统一格式化/扩展推荐）
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
 .DS_Store
 *.suo
