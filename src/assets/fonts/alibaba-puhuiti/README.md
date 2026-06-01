@@ -4,7 +4,6 @@
 > 各约 5MB，未做子集裁剪）。仅在切到「阿里巴巴普惠体」时按需懒加载。
 > 若日后想缩小体积，可按下文「方式 A / B」裁剪成子集再替换同名文件。
 
-
 普惠体官网只提供 TTF/OTF（且文件较大），无法用 npm 直接安装，需手动下载并转换为
 **woff2 子集**后放到本目录。`FONT_PRESET = 'alibaba-puhuiti'`（或界面切换到「阿里巴巴普惠体」）
 即生效；**本目录为空时不报错，自动回落系统字体**。
@@ -20,8 +19,8 @@
 
 建议下载 3 个常用字重（对应 CSS 400 / 500 / 700）：
 
-| CSS 字重 | 普惠体 3.0 命名（示例） |
-| -------- | ----------------------- |
+| CSS 字重 | 普惠体 3.0 命名（示例）     |
+| -------- | --------------------------- |
 | 400      | AlibabaPuHuiTi-3-55-Regular |
 | 500      | AlibabaPuHuiTi-3-65-Medium  |
 | 700      | AlibabaPuHuiTi-3-85-Bold    |
@@ -43,6 +42,7 @@ pyftsubset "AlibabaPuHuiTi-3-55-Regular.ttf" \
 ```
 
 把产出的 `alibaba-400.woff2` 等**直接放到本目录**即可。
+
 > 上面的 unicode 范围含完整 CJK 区（U+4E00-9FFF），覆盖最全但单文件约 4–5MB。
 > 想更小（~1MB），把 `--unicodes=...` 换成 `--text-file=常用字.txt`（自备常用字表），
 > 或改用下面的方式 B（按字频自动精简）。
@@ -60,6 +60,7 @@ npx cn-font-split -i ./AlibabaPuHuiTi-3-55-Regular.ttf --out-dir ./400 \
 
 把生成的子目录（含 `.css` 与若干 woff2 分块）整个放到本目录下，例如
 `alibaba-puhuiti/400/`、`/500/`、`/700/`。加载器会自动 import 其中的 `.css`。
+
 > 关键：`.css` 里的 `font-family` 必须是 `Alibaba PuHuiTi`，否则字体栈匹配不上。
 > 若你的 cn-font-split 版本没有 `--font-family` 参数，用其 JS API 的 `css.fontFamily` 设置。
 

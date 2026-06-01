@@ -42,7 +42,5 @@ export function useNavigation(): NavItem[] {
     })
   }
 
-  return items
-    .sort((a, b) => a.order - b.order)
-    .map(({ to, title, icon }) => ({ to, title, icon }))
+  return items.sort((a, b) => a.order - b.order).map(({ to, title, icon }) => ({ to, title, icon }))
 }

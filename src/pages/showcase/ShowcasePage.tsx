@@ -173,7 +173,7 @@ export function ShowcasePage() {
                     const s = STATUS_BADGE[p.status]
                     return (
                       <TableRow key={p.id}>
-                        <TableCell className="font-mono tabular-nums text-muted-foreground">
+                        <TableCell className="font-mono text-muted-foreground tabular-nums">
                           {p.id}
                         </TableCell>
                         <TableCell className="font-medium">{p.name}</TableCell>
@@ -196,7 +196,7 @@ export function ShowcasePage() {
               <CardHeader>
                 <CardTitle className="text-base">今日门诊</CardTitle>
               </CardHeader>
-              <CardContent className="text-3xl font-bold tabular-nums text-primary">
+              <CardContent className="text-3xl font-bold text-primary tabular-nums">
                 1,204
               </CardContent>
             </Card>
@@ -204,13 +204,13 @@ export function ShowcasePage() {
               <CardHeader>
                 <CardTitle className="text-base">待审核</CardTitle>
               </CardHeader>
-              <CardContent className="text-3xl font-bold tabular-nums text-warning">18</CardContent>
+              <CardContent className="text-3xl font-bold text-warning tabular-nums">18</CardContent>
             </Card>
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">在线设备</CardTitle>
               </CardHeader>
-              <CardContent className="text-3xl font-bold tabular-nums text-success">96</CardContent>
+              <CardContent className="text-3xl font-bold text-success tabular-nums">96</CardContent>
             </Card>
           </div>
         </Section>

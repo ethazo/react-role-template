@@ -32,7 +32,7 @@ export function AdminHome() {
               </span>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold tabular-nums text-foreground">{value}</div>
+              <div className="text-2xl font-bold text-foreground tabular-nums">{value}</div>
             </CardContent>
           </Card>
         ))}

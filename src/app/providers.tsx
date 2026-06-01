@@ -27,7 +27,9 @@ const ReactQueryDevtools = import.meta.env.PROD
 const TanStackRouterDevtools = import.meta.env.PROD
   ? () => null
   : lazy(() =>
-      import('@tanstack/react-router-devtools').then((m) => ({ default: m.TanStackRouterDevtools })),
+      import('@tanstack/react-router-devtools').then((m) => ({
+        default: m.TanStackRouterDevtools,
+      })),
     )
 
 export function App() {
