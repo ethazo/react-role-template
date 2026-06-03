@@ -3,11 +3,10 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider } from '@tanstack/react-router'
 import { ErrorBoundary } from 'react-error-boundary'
 import { router } from './router'
-import { queryClient } from './queryClient'
-import { authKeys } from '@/shared/auth/queries'
-import { setUnauthorizedHandler } from '@/shared/api/unauthorized'
-import { ThemeProvider } from '@/shared/theme/ThemeProvider'
-import { AppErrorFallback } from '@/shared/components/AppErrorFallback'
+import { queryClient } from '@/lib/react-query'
+import { authKeys } from '@/lib/auth'
+import { setUnauthorizedHandler } from '@/lib/api-client'
+import { AppErrorFallback } from '@/components/errors/AppErrorFallback'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Toaster } from '@/components/ui/sonner'
 
@@ -34,19 +33,17 @@ const TanStackRouterDevtools = import.meta.env.PROD
 
 export function App() {
   return (
-    <ThemeProvider>
-      <ErrorBoundary FallbackComponent={AppErrorFallback}>
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <RouterProvider router={router} />
-          </TooltipProvider>
-          <Toaster />
-          <Suspense>
-            <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
-            <TanStackRouterDevtools router={router} position="bottom-right" />
-          </Suspense>
-        </QueryClientProvider>
-      </ErrorBoundary>
-    </ThemeProvider>
+    <ErrorBoundary FallbackComponent={AppErrorFallback}>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <RouterProvider router={router} />
+        </TooltipProvider>
+        <Toaster />
+        <Suspense>
+          <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
+          <TanStackRouterDevtools router={router} position="bottom-right" />
+        </Suspense>
+      </QueryClientProvider>
+    </ErrorBoundary>
   )
 }

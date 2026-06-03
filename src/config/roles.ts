@@ -1,8 +1,8 @@
 /**
  * 角色单一数据源 (Single source of truth for roles).
  *
- * 扩展角色只改这里：新增一行 + 新增对应 modules/<role>/ 即可。
- * 核心骨架（router 聚合、guard 守卫、useNavigation）都不认识具体角色名，
+ * 扩展角色只改这里：新增一行 + 新增对应 features/<role>/ 即可。
+ * 核心骨架（router 聚合、guard 守卫）都不认识具体角色名，
  * 只消费这里导出的数据与类型。
  */
 

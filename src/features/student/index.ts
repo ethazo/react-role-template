@@ -1,0 +1,1 @@
+export { studentRouteTree } from './routes'

@@ -2,25 +2,27 @@
 
 可复用的**多角色前端模板**。核心卖点：**角色 = 配置/数据，加角色不动核心代码**；鉴权、路由、权限、请求等骨架与 UI 组件库解耦，组件库可随时替换。
 
+> 当前主题/字体处于「最小中性骨架」状态（单一亮色、系统字体），品牌色与暗色等设计层已剥离、按项目需要重建。详见「样式」。
+
 ## 技术栈
 
-| 层         | 选型                                                                          |
-| ---------- | ----------------------------------------------------------------------------- |
-| 构建       | Vite + React 19 + TypeScript                                                  |
-| 路由       | TanStack Router（代码式，类型安全守卫）                                       |
-| 服务端状态 | TanStack Query                                                                |
-| 本地状态   | Zustand                                                                       |
-| 请求       | Axios（`withCredentials` + 统一拦截/解包/401 跳登录）                         |
-| 表单       | react-hook-form + zod                                                         |
-| 样式       | Tailwind CSS v4 + shadcn（分层令牌主题，详见「主题系统」）                    |
-| 后端       | 真实接口（Vite 代理到 `http://duomokuai.ulps.local.lzlzlzlz.xyz`，规避 CORS） |
-| 规范       | ESLint + Prettier + husky + lint-staged + commitlint                          |
+| 层         | 选型                                                  |
+| ---------- | ----------------------------------------------------- |
+| 构建       | Vite + React 19 + TypeScript                          |
+| 路由       | TanStack Router（代码式，类型安全守卫）               |
+| 服务端状态 | TanStack Query                                        |
+| 本地状态   | Zustand                                               |
+| 请求       | Axios（`withCredentials` + 统一拦截/解包/401 跳登录） |
+| 表单       | react-hook-form + zod                                 |
+| 样式       | Tailwind CSS v4 + shadcn（最小中性令牌，单一亮色）    |
+| 规范       | ESLint + Prettier + husky + lint-staged + commitlint  |
 
 ## 快速开始
 
 ```bash
+cp .env.example .env   # 按环境填写（见下方「环境变量」）
 pnpm install
-pnpm dev        # 开发服务器，/ulps 自动代理到真实后端
+pnpm dev        # 开发服务器，VITE_API_BASE_URL 前缀自动代理到后端
 pnpm build      # 类型检查 + 生产构建
 pnpm lint       # ESLint
 pnpm format     # Prettier 格式化
@@ -28,95 +30,83 @@ pnpm format     # Prettier 格式化
 
 打开 http://localhost:5173 ，用真实账号登录（如 `ycht1` 教师 / `xs1` 学生）。
 
-后端地址在 `vite.config.ts` 的 `server.proxy` 中配置；生产部署时让网关把 `/ulps` 转发到后端即可。
+### 环境变量（`.env`）
+
+| 变量                    | 必填       | 说明                                                           |
+| ----------------------- | ---------- | -------------------------------------------------------------- |
+| `VITE_APP_TITLE`        | 选填       | 站点标题：注入 `index.html` 的 `<title>`（暂不在页面内展示）   |
+| `VITE_API_BASE_URL`     | 必填       | axios baseURL。开发期填相对前缀（如 `/ulps`）以走代理规避 CORS |
+| `VITE_API_PROXY_TARGET` | 开发期必填 | dev server 代理目标（后端真实地址），仅开发期使用              |
+
+环境变量在启动时由 `config/env.ts`（zod）校验，缺漏/非法即中止启动。生产部署时由网关把 `VITE_API_BASE_URL` 前缀转发到后端，或将其填为完整后端 URL 直连。
 
 ## 鉴权约定
 
 - 无 token，账号密码登录后后端 set-cookie（`USESSIONID`）；请求自动带 cookie（`withCredentials`）。
-- 登录接口 `POST /ulps/login`（form-urlencoded），响应 `data` 仅为角色串（如 `TEACHER`）；
-  前端据此映射为本地 `Role`（小写）并请求 `GET /ulps/{role}/self` 拿用户详情。
-- 登录态靠各角色 `self` 接口判断；前端用 localStorage 缓存「角色提示」以决定刷新后调哪个 self。
-- 401 由 axios 拦截器统一跳登录（登录态探测请求标记 `silent`，401 不触发跳转）。
-- 后端响应 envelope：`{ code, msg, data }`，`code === '00000'` 为成功（见 `src/shared/api`）。
+- 登录接口 `POST {baseURL}/login`（form-urlencoded），响应 `data` 仅为角色串（如 `TEACHER`）；
+  前端据此映射为本地 `Role`（小写）并请求 `GET {baseURL}/{role}/self` 拿用户详情。
+- `self` 接口按角色分路径，故登录时把角色缓存到 localStorage（仅作「提示」，非鉴权凭据），刷新后据此精确命中 `/{role}/self`。
+- 401 由 axios 拦截器统一跳登录；登录态探测请求标记 `silent`，其 401 不触发跳转。
+- 后端响应 envelope：`{ code, msg, data }`，`code === '00000'` 为成功（拦截器自动解包，见 `lib/api-client.ts`）。
 
 ## 目录结构
 
 ```
 src/
-  app/          应用装配：providers、router 聚合、rootRoute、queryClient
-  shared/       与角色无关的基础设施
-    api/          axios 实例 + 拦截器 + 401 注册点
-    auth/         /me 查询、useAuth、guard（protect/withNav）、useNavigation
-    components/   通用无业务 UI
-    types/        CurrentUser / RouteMeta（含 staticData 类型增强）
+  app/            应用装配
+    providers.tsx   Provider 树（ErrorBoundary/Query/Tooltip/Toaster）+ RouterProvider + 401 处理器注入
+    router.tsx      路由聚合（公共路由 + 各 feature 子树）+ Router 实例
+  lib/            与角色无关的「内核库」
+    api-client.ts   axios 实例 + 拦截器 + 401 注册点 + 类型化 http
+    react-query.ts  QueryClient + 全局错误 toast + meta 类型增强
+    root-route.tsx  根路由（各 feature 路由子树的 parent）
+    auth/           鉴权能力：api / queries / useAuth / guard，对外只暴露 index.ts
+    utils.ts        cn() 等工具
+  components/
+    ui/             shadcn 原子组件（可整体替换）
+    errors/         兜底页：ErrorPage / NotFoundPage / ForbiddenPage / BlankLayout / AppErrorFallback
   config/
-    roles.ts      ★ 角色单一数据源（Role 类型的根来源）
-    theme.ts      ★ 主题单一数据源（默认皮肤 / 字体 / 是否允许切换）
-  shared/theme/
-    tokens/       分层 CSS 令牌：primitives(图表色板) → brands/*(品牌主色) → semantic(完整主题，移植自 HeroUI)
-    brand.ts      品牌皮肤运行时应用（data-brand）
-    fonts.ts      字体预设运行时应用（按需加载本地 woff2）
-  modules/      按角色分区，各自自包含
-    student/      自定义顶部导航布局（演示非侧边菜单形态）
-    teacher/      共享 SidebarLayout
-    admin/        共享 SidebarLayout（页面为占位，业务内容按项目填充）
-  layouts/      可选布局：SidebarLayout / BlankLayout
-  pages/        公共页：login / 403 / 404 / error / showcase（设计系统展示）
+    env.ts          ★ 启动期环境变量校验（zod）；应用名等部署期配置的类型安全入口
+    roles.ts        ★ 角色单一数据源（Role 类型的根来源）
+  features/         按角色/领域分区，各自自包含（业务在此填充）
+    auth/           登录页 + /login 路由
+    student/        各角色统一形态：layout/ + pages/ + routes.tsx + index.ts（导出路由子树）
+    teacher/
+    admin/
+  types/            CurrentUser 等领域类型
+  hooks/            通用 hooks（use-mobile…）
+  main.tsx          入口（先校验 env，再挂载 App）
+  index.css         Tailwind + 最小中性令牌（单一亮色）
 ```
+
+> 组织规则一句话：**`features/<角色>/` 装会随项目变的角色业务；`lib/`（内核）+ `config/` + `components/` + `types/` 装与角色无关的不变骨架**。没有 `shared/` 中间层；每个 feature 通过 `index.ts` 只导出自己的路由子树，由 `app/router.tsx` 聚合。
 
 ## 如何新增一个角色
 
 以「科室主任 director」为例，**不改任何核心代码**：
 
 1. `src/config/roles.ts` 加一行：`director: { label: '科室主任', home: '/director' }`
-2. 新建 `src/modules/director/`，写 `routes.tsx`（选一个布局，用 `protect(['director'])` 守卫，子页面用 `withNav` 声明导航）
+2. 新建 `src/features/director/`（可整体复制现有角色目录起步）：
+   - `layout/DirectorLayout.tsx`：本角色布局外壳
+   - `pages/*`：页面组件
+   - `routes.tsx`：布局路由用 `protect(['director'])` 守卫整片子树，挂上各页面，导出 `directorRouteTree`
+   - `index.ts`：`export { directorRouteTree } from './routes'`
 3. `src/app/router.tsx` 把 `directorRouteTree` 加进聚合数组
 
-完成 —— 守卫、导航、按角色重定向全部自动生效。
+完成 —— 守卫与按角色重定向（`config/roles.ts` 的 `getRoleHome`）自动生效。
 
 ## 权限机制
 
-- 路由声明所需角色：`protect(['teacher'])` / `withNav(['teacher'], nav)`，元信息写在路由 `staticData`。
+- 路由声明所需角色：`protect(['teacher'])`，挂在角色布局路由上，守卫整片子路由。
 - 守卫（`beforeLoad`）比对「路由声明的角色」与「当前用户角色」，决定放行 / 403 / 跳登录——**没有任何 `if (role === 'xxx')` 硬编码**。
-- 导航由 `useNavigation()` 从「路由表 + 当前角色」自动派生，是「数据」而非固定的左侧菜单；各布局自行决定渲染形态。
-- 当前为**角色级**粒度；未来要按钮级可平滑升级为权限码体系（角色 = 权限码集合）。
+- 组件内判角色用 `useAuth().hasRole(...)` / `hasAnyRole(...)`，不要直接写 `user.roles.includes(...)`：将来升级到「权限码」体系（角色 = 权限码集合）只改 `useAuth` 一处。
+- 当前为**角色级**粒度；导航菜单暂未内置（布局为最小骨架），由各项目自行在布局内渲染。
 
-## 主题系统
+## 样式
 
-面向**教育 / 教学**场景（学生·教师内部系统、比赛/演示系统）的可复用主题底座：明亮专业的科技蓝、活力橙点缀、完整状态色、中文字体，**换项目不改组件代码**。配色移植自 [HeroUI](https://heroui.com) 默认主题。访问 `/showcase` 可实时预览并切换皮肤 / 字体 / 明暗。
+当前为**最小中性主题**，目的是让 shadcn 原语不失色、又不绑定任何品牌设计：
 
-### 分层令牌（职责清晰，换主色只动品牌层）
-
-```
-① 图表色板 primitives.css   仅 5 个图表分类色 --viz-*，与主题解耦，几乎永不改
-② 品牌主色 brands/*.css     只定义 --brand-* 色阶 + 暖色点缀 --brand-accent；换主色色相 = 换这一组值
-        ↓ 被引用
-③ 语义令牌 semantic.css     完整主题（移植自 HeroUI）：--primary 引用品牌层，
-                            中性面 / 状态色 / 明暗两套都在此；变量名沿用 shadcn 约定
-```
-
-- **变量名完全沿用 shadcn 约定**（`--primary`/`--background`...），所以 `components/ui/*` 一行都不用改，组件库可随时替换。
-- 状态语义色：`bg-success` / `text-warning` / `border-info` / `bg-destructive` 直接可用；success / warning 用**深色前景**（亮色底上才清晰）。
-- 暖色点缀：`bg-brand-accent` / `text-brand-accent`（徽章 / CTA / 图表高亮）。
-- 全程 **oklch** 色彩空间，明暗模式对比度一致。
-
-### 切换 / 新增皮肤
-
-内置两套：`heroui`（科技蓝，默认）/ `violet`（创想紫），暖橙点缀共用。
-
-- 皮肤由**代码决定**（产品级模板默认不向终端用户暴露皮肤切换控件）：改 `src/config/theme.ts` 的 `DEFAULT_BRAND`，或在代码里调用 `setBrand('violet')`（写 `<html data-brand>` + 持久化）。
-- **新增一套皮肤**（如 `green` 生机绿）：① `config/theme.ts` 的 `BRANDS` 加一行 → ② `tokens/brands/green.css` 定义 `[data-brand='green']` 的 `--brand-*` 色阶（含 `--brand-accent`） → ③ `index.css` 加一行 `@import`。完成，全站自动支持。
-- 推荐用 [tweakcn.com](https://tweakcn.com) 可视化调色并导出，或 [oklch.com](https://oklch.com) 取色；主色注意避开「正常 = 绿」语义。
-
-### 字体（内网 / 信创友好）
-
-`src/config/theme.ts` 的 `FONT_PRESET` 控制：
-
-- `system`（默认）：系统中文字体栈（苹方/鸿蒙/雅黑/思源），**零加载、天然离线**。
-- `noto-sans-sc`：思源黑体，随 `@fontsource/noto-sans-sc` **本地自托管**，运行时**按需加载**简体常用字子集（各字重约 1.1MB woff2，`font-display: swap`，生僻字回落系统字体）。**全程同源、不依赖任何外网 CDN**，适合内网部署。仅打包 woff2（不含 woff）。
-- `alibaba-puhuiti`：阿里巴巴普惠体（免费商用）。官网只提供 TTF/OTF，需自行下载并转换为 woff2 子集后投放到 `src/assets/fonts/alibaba-puhuiti/`，**该目录为空时自动回落系统字体**。详细下载/转换步骤见该目录下的 `README.md`。
-- 英文 / 数字始终优先 Geist，中文落到对应中文字体；表格数字默认等宽对齐（`tabular-nums`）。
-- 新增字体：把本地 woff2 装进来，在 `shared/theme/fonts.ts` 的 `FONT_PRESETS` 登记字体栈与加载器即可。
-
-> 皮肤与字体均**由代码决定、不暴露给终端用户**（产品级默认）。唯一面向用户的外观开关是右上角的**明暗切换** `ModeToggle`。
-> `config/app.ts` 收敛应用名/副标题/Logo 文案，新项目改这一处即可。
+- 仅一套中性灰阶亮色令牌，变量名完全沿用 shadcn 约定（`--primary`/`--background`...），写在 `src/index.css`；`components/ui/*` 一行不用改，组件库可随时替换。
+- **暂无暗色模式**：保留了 `dark` 变体声明但永不挂 `.dark` 类，全站稳定渲染为亮色（无需逐个改 shadcn 组件）。
+- 字体为系统字体栈（`--font-sans`），无自托管字体依赖。
+- 品牌色、状态色、阴影、字阶、动效、暗色、字体等设计层已剥离；落地项目按需在 `index.css` 重建令牌即可。

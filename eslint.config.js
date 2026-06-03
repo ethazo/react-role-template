@@ -38,4 +38,48 @@ export default defineConfig([
       'react-hooks/set-state-in-effect': 'off',
     },
   },
+  {
+    // 分层依赖方向（单向，自上而下）：app → features → 内核(lib/components/hooks/types/config)。
+    // 内核层是“可整体搬走、零业务”的底座，绝不能反向依赖上层。
+    files: [
+      'src/lib/**/*.{ts,tsx}',
+      'src/components/**/*.{ts,tsx}',
+      'src/hooks/**/*.{ts,tsx}',
+      'src/types/**/*.{ts,tsx}',
+      'src/config/**/*.{ts,tsx}',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/app', '@/app/**', '@/features', '@/features/**'],
+              message:
+                '内核层（lib/components/hooks/types/config）不得依赖 app 或 features —— 依赖只能自上而下。',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // feature 之间禁止互相 import（要复用就下沉到 lib/components）；feature 也不得依赖组合根 app。
+    // 同一 feature 内部请用相对路径（./），跨 feature 才会写成 @/features/<name>，故在此整体禁掉。
+    files: ['src/features/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/app', '@/app/**', '@/features/*', '@/features/*/**'],
+              message:
+                'feature 之间禁止互相依赖（请下沉到 lib/components），且不得依赖 app；同 feature 内部用相对路径。',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ])

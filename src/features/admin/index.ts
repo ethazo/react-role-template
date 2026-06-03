@@ -1,0 +1,1 @@
+export { adminRouteTree } from './routes'
